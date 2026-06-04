@@ -5,7 +5,7 @@ A [skill](https://skills.sh) that lets AI agents interact with users via Telegra
 ## Install
 
 ```bash
-bunx skills add roziscoding/telegram
+bunx skills add roziscoding/telegram-skills
 ```
 
 ## Setup
