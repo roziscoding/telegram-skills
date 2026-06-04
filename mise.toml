@@ -2,5 +2,27 @@
 bun = "latest"
 
 [tasks.build]
-description = "Build standalone telegram binary"
-run = "bun build --compile lib/telegram.ts --outfile bin/telegram"
+description = "Locally compile the telegram binary for testing (does not overwrite the bin/telegram wrapper)"
+run = "bun build --compile lib/telegram.ts --outfile bin/.telegram-bin-local"
+
+[tasks.release]
+description = "Bump version in package.json + bin/telegram, commit, and tag. Usage: mise run release <version>"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+raw="{{arg(name='version')}}"
+version="${raw#v}"
+if [ -z "$version" ]; then
+  echo "Usage: mise run release <version>" >&2
+  exit 1
+fi
+
+VERSION="$version" bun -e 'const p = "package.json"; const j = await Bun.file(p).json(); j.version = Bun.env.VERSION; await Bun.write(p, JSON.stringify(j, null, 2) + "\n")'
+sed -i "s/^VERSION=\"[^\"]*\"/VERSION=\"v$version\"/" bin/telegram
+
+git add package.json bin/telegram
+git commit -m "chore(release): v$version"
+git tag "v$version"
+
+echo "Tagged v$version. Push with: git push && git push origin v$version" >&2
+'''

@@ -23,7 +23,9 @@ Create `~/.config/telegram-skills/credentials.json`:
 }
 ```
 
-No other dependencies required — the binary is self-contained.
+The first time a skill runs, `bin/telegram` downloads the prebuilt binary for
+your platform (and the version it pins) from GitHub Releases — needs `curl` or
+`wget` — and caches it next to itself. No Bun or other dependencies required.
 
 ## Skills
 
