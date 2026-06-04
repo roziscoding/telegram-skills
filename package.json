@@ -1,0 +1,10 @@
+{
+  "name": "telegram-notify",
+  "version": "1.0.0",
+  "description": "Telegram notification skill for Claude Code and other AI agents",
+  "author": "roziscoding",
+  "license": "MIT",
+  "dependencies": {
+    "grammy": "^1.41.1"
+  }
+}

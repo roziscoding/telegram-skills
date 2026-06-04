@@ -1,0 +1,6 @@
+[tools]
+bun = "latest"
+
+[tasks.build]
+description = "Build standalone telegram binary"
+run = "bun build --compile lib/telegram.ts --outfile bin/telegram"
