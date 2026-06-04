@@ -29,7 +29,7 @@ jobs:
             arch: arm64
             target: bun-darwin-arm64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -44,6 +44,6 @@ jobs:
             --outfile telegram-${{ matrix.os }}-${{ matrix.arch }}
 
       - name: Upload to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: telegram-${{ matrix.os }}-${{ matrix.arch }}
