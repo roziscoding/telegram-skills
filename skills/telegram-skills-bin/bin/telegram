@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="roziscoding/telegram-skills"
-VERSION="v1.1.1"   # bump together with the release tag
+VERSION="v1.2.0"   # bump together with the release tag
 
 BIN_DIR="$(cd "$(dirname "$0")" && pwd)"
 BIN="$BIN_DIR/.telegram-bin-$VERSION"

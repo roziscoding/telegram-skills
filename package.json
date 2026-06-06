@@ -1,6 +1,6 @@
 {
   "name": "telegram-notify",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Telegram notification skill for Claude Code and other AI agents",
   "author": "roziscoding",
   "license": "MIT",
