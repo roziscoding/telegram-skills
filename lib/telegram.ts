@@ -4,6 +4,7 @@ import { parseArgs } from "util";
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { homedir } from "os";
+import { randomBytes } from "crypto";
 import { Bot, InlineKeyboard } from "grammy";
 
 const CREDENTIALS_PATH = join(homedir(), ".config", "telegram-skills", "credentials.json");
@@ -31,6 +32,8 @@ const { values, positionals } = parseArgs({
     "contact-add": { type: "boolean" },
     "list-contacts": { type: "boolean" },
     "delete-contact": { type: "boolean" },
+    setup: { type: "boolean" },
+    name: { type: "string" },
   },
   allowPositionals: true,
   strict: false,
@@ -81,6 +84,83 @@ if (values["delete-contact"]) {
   writeCredentials(creds);
   console.log(`Contact "${key}" deleted`);
   process.exit(0);
+}
+
+// --- Interactive setup mode ---
+
+if (values.setup) {
+  // Unambiguous alphanumeric code (no 0/O/1/I), kept only in memory.
+  const generateCode = (len = 8) => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const bytes = randomBytes(len);
+    let out = "";
+    for (let i = 0; i < len; i++) out += chars[bytes[i] % chars.length];
+    return out;
+  };
+
+  const creds = readCredentials();
+  // Token comes from the first positional (`telegram --setup <token>`) or,
+  // failing that, an already-configured bot_token.
+  const token = positionals[0] ?? creds.bot_token;
+  if (!token) {
+    console.error(`No bot token. Run 'telegram --setup <token>' or add "bot_token" to ${CREDENTIALS_PATH}`);
+    process.exit(1);
+  }
+  // Persist the token up front so a later timeout doesn't lose it.
+  creds.bot_token = token;
+  writeCredentials(creds);
+
+  const nameOverride = (values.name as string | undefined)?.toLowerCase().trim();
+  const code = generateCode();
+  const bot = new Bot(token);
+
+  let username: string;
+  try {
+    username = (await bot.api.getMe()).username;
+  } catch (err) {
+    console.error(`Could not reach Telegram with that token: ${(err as Error).message}`);
+    process.exit(1);
+  }
+
+  const url = `https://t.me/${username}?start=${code}`;
+
+  // Emit the link block on stderr so it reaches the agent immediately
+  // (unbuffered), before we block on long polling.
+  console.error(`SETUP_URL=${url}`);
+  console.error(`SETUP_CODE=${code}`);
+  console.error(`SETUP_BOT=@${username}`);
+  console.error(`Tell the user: open ${url} and press Start, or open @${username} in Telegram and send: /start ${code}`);
+  console.error("Waiting for the user to start the bot...");
+
+  const timer = setTimeout(() => {
+    console.error("Timed out after 5 minutes waiting for the user to start the bot.");
+    process.exit(1);
+  }, 5 * 60 * 1000);
+
+  // A deeplink click and a manual "/start <code>" arrive identically.
+  bot.command("start", async (ctx) => {
+    if ((ctx.match ?? "").trim() !== code) return; // ignore unrelated /start
+    clearTimeout(timer);
+
+    const chatId = ctx.chat.id;
+    const fromName = ctx.from?.first_name?.toLowerCase().trim();
+    const contact = nameOverride || fromName || "me";
+
+    creds.contacts = creds.contacts ?? {};
+    creds.contacts[contact] = String(chatId);
+    creds.default_contact = contact;
+    writeCredentials(creds);
+
+    await ctx.reply("✅ All set — this chat is now connected.");
+    console.log(`SETUP_OK chat_id=${chatId} contact=${contact}`);
+    console.log('Setup complete. Now use the telegram-notify skill to send the user a "hello" message.');
+
+    await bot.stop();
+    process.exit(0);
+  });
+
+  await bot.start({ drop_pending_updates: true });
+  // bot.start resolves only after bot.stop(); the handler exits the process.
 }
 
 // --- Message sending mode ---

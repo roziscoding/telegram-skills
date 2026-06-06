@@ -10,7 +10,12 @@ bunx skills add roziscoding/telegram-skills
 
 ## Setup
 
-Create `~/.config/telegram-skills/credentials.json`:
+The easiest way is the **`telegram-setup`** skill: ask your agent to "set up
+Telegram", hand it your bot token from [@BotFather](https://t.me/BotFather), and
+click the link it gives you. It captures your chat ID and configures the default
+recipient for you.
+
+To configure manually instead, create `~/.config/telegram-skills/credentials.json`:
 
 ```json
 {
@@ -37,10 +42,11 @@ required.
 
 | Skill | Description |
 |-------|-------------|
+| `telegram-setup` | First-time setup: connect a bot and capture your chat ID |
 | `telegram-notify` | Send messages (fire-and-forget) |
 | `telegram-ask` | Ask questions with inline buttons (blocks until answered) |
 | `telegram-manage-contacts` | Add, remove, and list named contacts |
-| `telegram-skills-bin` | Shared CLI binary the other three depend on (not invoked directly) |
+| `telegram-skills-bin` | Shared CLI binary the others depend on (not invoked directly) |
 
 > **Dependency:** the three user-facing skills call the binary shipped by
 > `telegram-skills-bin`. `bunx skills add roziscoding/telegram-skills` installs the
