@@ -27,26 +27,28 @@ Create `~/.config/telegram-skills/credentials.json`:
 
 ## Usage
 
-The binary is at `<skill-dir>/../../bin/telegram`. It reads message text from stdin.
+The binary is at `<skill-dir>/../telegram-skills-bin/bin/telegram`. It reads message text from stdin.
+
+> **Requires the `telegram-skills-bin` skill.** The binary lives in that sibling skill. If `<skill-dir>/../telegram-skills-bin/bin/telegram` does not exist, tell the user to install it (`bunx skills add roziscoding/telegram-skills`) instead of failing with a raw error.
 
 ```bash
 # Send to default recipient
-echo "Deploy complete" | <skill-dir>/../../bin/telegram
+echo "Deploy complete" | <skill-dir>/../telegram-skills-bin/bin/telegram
 
 # Send to a specific chat ID
-echo "Hello" | <skill-dir>/../../bin/telegram -c 123456
+echo "Hello" | <skill-dir>/../telegram-skills-bin/bin/telegram -c 123456
 
 # Send to multiple recipients
-echo "Hello" | <skill-dir>/../../bin/telegram -c 111 -c 222
+echo "Hello" | <skill-dir>/../telegram-skills-bin/bin/telegram -c 111 -c 222
 
 # Send to a named contact
-echo "Hello" | <skill-dir>/../../bin/telegram --to alice
+echo "Hello" | <skill-dir>/../telegram-skills-bin/bin/telegram --to alice
 
 # Send to multiple named contacts
-echo "Hello" | <skill-dir>/../../bin/telegram --to alice --to bob
+echo "Hello" | <skill-dir>/../telegram-skills-bin/bin/telegram --to alice --to bob
 
 # Multiline with heredoc
-<skill-dir>/../../bin/telegram <<'EOF'
+<skill-dir>/../telegram-skills-bin/bin/telegram <<'EOF'
 *Build complete*
 - 42 tests passed
 - Deployed to staging

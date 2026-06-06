@@ -27,21 +27,23 @@ Create `~/.config/telegram-skills/credentials.json`:
 
 ## Usage
 
-The binary is at `<skill-dir>/../../bin/telegram`. It reads the question from stdin. Use `--choice` to define the buttons.
+The binary is at `<skill-dir>/../telegram-skills-bin/bin/telegram`. It reads the question from stdin. Use `--choice` to define the buttons.
+
+> **Requires the `telegram-skills-bin` skill.** The binary lives in that sibling skill. If `<skill-dir>/../telegram-skills-bin/bin/telegram` does not exist, tell the user to install it (`bunx skills add roziscoding/telegram-skills`) instead of failing with a raw error.
 
 ```bash
 # Yes/No question
-ANSWER=$(echo "Deploy to production?" | <skill-dir>/../../bin/telegram --choice "Yes" --choice "No")
+ANSWER=$(echo "Deploy to production?" | <skill-dir>/../telegram-skills-bin/bin/telegram --choice "Yes" --choice "No")
 echo "User chose: $ANSWER"
 
 # Multiple options
-ANSWER=$(echo "Which environment?" | <skill-dir>/../../bin/telegram --choice "staging" --choice "production" --choice "cancel")
+ANSWER=$(echo "Which environment?" | <skill-dir>/../telegram-skills-bin/bin/telegram --choice "staging" --choice "production" --choice "cancel")
 
 # Ask a specific person by chat ID
-ANSWER=$(echo "Approve release?" | <skill-dir>/../../bin/telegram -c 123456 --choice "Approve" --choice "Reject")
+ANSWER=$(echo "Approve release?" | <skill-dir>/../telegram-skills-bin/bin/telegram -c 123456 --choice "Approve" --choice "Reject")
 
 # Ask a named contact
-ANSWER=$(echo "Approve release?" | <skill-dir>/../../bin/telegram --to alice --choice "Approve" --choice "Reject")
+ANSWER=$(echo "Approve release?" | <skill-dir>/../telegram-skills-bin/bin/telegram --to alice --choice "Approve" --choice "Reject")
 ```
 
 Usage: `<bin> [-c chat_id ...] [--to name ...] --choice "Option" [--choice "Option" ...]` — reads question from stdin. The script blocks until a button is pressed, then prints the chosen text to stdout. The original message is edited to show the selection.
