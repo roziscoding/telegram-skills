@@ -23,6 +23,11 @@ Create `~/.config/telegram-skills/credentials.json`:
 }
 ```
 
+The default recipient (when no `-c`/`--to` is passed) is resolved in order:
+`default_contact` (a name looked up in `contacts`), then `default_chat_id` (a raw
+ID). Use `default_contact` if you'd rather keep your own ID in one place under
+`contacts`.
+
 The first time a skill runs, the shared `telegram` wrapper downloads the prebuilt
 binary for your platform (and the version it pins) from GitHub Releases — needs
 `curl` or `wget` — and caches it next to itself. No Bun or other dependencies

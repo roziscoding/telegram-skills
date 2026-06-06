@@ -8,7 +8,7 @@ import { Bot, InlineKeyboard } from "grammy";
 
 const CREDENTIALS_PATH = join(homedir(), ".config", "telegram-skills", "credentials.json");
 
-type Credentials = { bot_token: string; default_chat_id?: string; contacts?: Record<string, string> };
+type Credentials = { bot_token: string; default_contact?: string; default_chat_id?: string; contacts?: Record<string, string> };
 
 function readCredentials(): Credentials {
   try {
@@ -104,14 +104,27 @@ const toIds = (values.to ?? []).map((name) => {
   return id;
 });
 
+// Default recipient: prefer a named default_contact (resolved through
+// contacts), then fall back to a raw default_chat_id.
+function resolveDefaultIds(): string[] {
+  if (credentials.default_contact) {
+    const id = contacts[credentials.default_contact.toLowerCase()];
+    if (!id) {
+      console.error(`"default_contact" is "${credentials.default_contact}" but no such contact exists. Available: ${Object.keys(contacts).join(", ") || "(none)"}`);
+      process.exit(1);
+    }
+    return [id];
+  }
+  if (credentials.default_chat_id) return [credentials.default_chat_id];
+  return [];
+}
+
 const chatIds = values.c?.length || toIds.length
   ? [...(values.c ?? []), ...toIds]
-  : credentials.default_chat_id
-    ? [credentials.default_chat_id]
-    : [];
+  : resolveDefaultIds();
 
 if (!chatIds.length) {
-  console.error('No chat ID provided via -c/--to and no "default_chat_id" in credentials');
+  console.error('No recipient: pass -c/--to, or set "default_contact" or "default_chat_id" in credentials');
   process.exit(1);
 }
 

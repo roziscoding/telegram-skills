@@ -27,11 +27,11 @@ Everything routes through one source file. The compiled binary is **not** commit
 
 ### Recipient resolution
 
-Recipients come from `-c <chat_id>` (raw, repeatable) and/or `--to <name>` (named contact, repeatable). `--to` names are looked up in `contacts` from credentials (case-insensitive). If neither flag is given, falls back to `default_chat_id`. Messages fan out to all resolved chat IDs via `Promise.allSettled`.
+Recipients come from `-c <chat_id>` (raw, repeatable) and/or `--to <name>` (named contact, repeatable). `--to` names are looked up in `contacts` from credentials (case-insensitive). If neither flag is given, the default recipient is resolved in order: `default_contact` (a name looked up in `contacts`), then `default_chat_id` (a raw ID). Messages fan out to all resolved chat IDs via `Promise.allSettled`.
 
 ### Credentials
 
-All state lives in `~/.config/telegram-skills/credentials.json` (`bot_token`, optional `default_chat_id`, optional `contacts` map). Contact-management commands read/write this file directly; names are stored lowercased.
+All state lives in `~/.config/telegram-skills/credentials.json` (`bot_token`, optional `default_contact` name, optional `default_chat_id` raw ID, optional `contacts` map). Contact-management commands read/write this file directly; names are stored lowercased.
 
 ## Commands
 
