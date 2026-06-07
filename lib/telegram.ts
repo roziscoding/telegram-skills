@@ -243,14 +243,27 @@ if (failures.length) {
 }
 
 if (choices.length) {
+  // Track each sent question by chat so we can recognise both a button press
+  // (callback_query) and a plain reply to that exact message.
   const sentMessages = results
     .filter((r) => r.status === "fulfilled")
-    .map((r) => (r as PromiseFulfilledResult<any>).value.message_id);
+    .map((r) => {
+      const msg = (r as PromiseFulfilledResult<any>).value;
+      return { chatId: String(msg.chat.id), messageId: msg.message_id as number };
+    });
+
+  // Edit the original question to show the answer, removing the buttons.
+  async function settle(chatId: string, messageId: number, footer: string) {
+    await bot.api.editMessageText(chatId, messageId, `${text}\n\n${footer}`, {
+      parse_mode: "Markdown",
+    });
+  }
 
   bot.on("callback_query:data", async (ctx) => {
     const data = ctx.callbackQuery.data;
     if (!data.startsWith("choice:")) return;
-    if (!sentMessages.includes(ctx.callbackQuery.message?.message_id!)) return;
+    const messageId = ctx.callbackQuery.message?.message_id;
+    if (!sentMessages.some((m) => m.messageId === messageId)) return;
 
     const chosen = data.slice("choice:".length);
     await ctx.answerCallbackQuery({ text: chosen });
@@ -260,6 +273,25 @@ if (choices.length) {
     });
 
     console.log(chosen);
+    await bot.stop();
+  });
+
+  // An explicit reply to the question counts as an answer too: edit the
+  // original to mark it answered, then print the reply text to the agent.
+  bot.on("message", async (ctx) => {
+    const repliedTo = ctx.message.reply_to_message?.message_id;
+    if (repliedTo == null) return;
+    const target = sentMessages.find(
+      (m) => m.messageId === repliedTo && m.chatId === String(ctx.chat.id)
+    );
+    if (!target) return;
+
+    const answer = (ctx.message.text ?? ctx.message.caption ?? "").trim();
+    if (!answer) return; // ignore non-text replies (stickers, photos, etc.)
+
+    await settle(target.chatId, target.messageId, `💬 _Answered by reply_`);
+
+    console.log(answer);
     await bot.stop();
   });
 
