@@ -1,6 +1,6 @@
 ---
 name: telegram-notify
-description: Send a Telegram message to configured contacts. Use when the user asks to send a message, notify, ping, or alert via Telegram. Also use when you need to proactively notify the user about something (e.g. a long task completing).
+description: Send a one-way Telegram message to configured contacts. Use when the user asks to send a message, notify, ping, or alert via Telegram. Also use when you need to proactively notify the user about something (e.g. a long task completing). This skill is send-only and does NOT wait for or receive a reply — if you need an answer or decision back from the user, use the telegram-ask skill instead.
 metadata:
   author: roziscoding
   version: "1.0.0"
@@ -8,7 +8,9 @@ metadata:
 
 # Telegram Notify
 
-Send messages via a Telegram bot. This skill is fire-and-forget — it sends and moves on.
+Send messages via a Telegram bot. This skill is fire-and-forget and **one-way only** — it sends and moves on. It does not wait for, read, or return any response from the user.
+
+> **Need an answer back?** This skill cannot receive replies. If you need the user to confirm, decide, or provide input before continuing, use the **`telegram-ask`** skill instead — it blocks until the user answers (via a button or a reply) and prints the answer to stdout.
 
 ## Setup
 
