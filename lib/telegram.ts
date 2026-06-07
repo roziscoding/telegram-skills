@@ -289,7 +289,7 @@ if (choices.length) {
     const answer = (ctx.message.text ?? ctx.message.caption ?? "").trim();
     if (!answer) return; // ignore non-text replies (stickers, photos, etc.)
 
-    await settle(target.chatId, target.messageId, `💬 _Answered by reply_`);
+    await settle(target.chatId, target.messageId, `💬 *${answer}*\n_— answered by reply_`);
 
     console.log(answer);
     await bot.stop();
