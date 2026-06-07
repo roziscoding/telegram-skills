@@ -25,7 +25,7 @@ Everything routes through one source file. The compiled binary is **not** commit
 ### Two interaction modes
 
 - **Fire-and-forget** (`telegram-notify`): send and exit.
-- **Blocking** (`telegram-ask`): when `--choice` flags are present, the script attaches an inline keyboard, then calls `bot.start()` and waits for a `callback_query`. On a button press it edits the original message to show the selection, prints the chosen text to stdout, and `bot.stop()`s. This is why ask blocks until the user answers.
+- **Blocking** (`telegram-ask`): when `--choice` flags are present, the script attaches an inline keyboard, then calls `bot.start()` and waits for either a `callback_query` (button press) or a `message` that is an explicit reply to the question (`reply_to_message.message_id` matching a sent message, same chat). On a button press it prints the chosen text; on a reply it prints the reply text. Either way it edits the original message to show the answer (removing the buttons), prints to stdout, and `bot.stop()`s. Non-text replies are ignored. This is why ask blocks until the user answers.
 
 ### Recipient resolution
 

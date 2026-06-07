@@ -1,6 +1,6 @@
 ---
 name: telegram-ask
-description: Ask a question via Telegram with inline buttons and wait for the user's response. Use when you need user confirmation, input, or a decision before proceeding (e.g. "deploy to prod?", "which option?").
+description: Ask a question via Telegram with inline buttons and wait for the user's response — either a button press or a free-text reply to the message. Use when you need user confirmation, input, or a decision before proceeding (e.g. "deploy to prod?", "which option?").
 metadata:
   author: roziscoding
   version: "1.0.0"
@@ -8,7 +8,7 @@ metadata:
 
 # Telegram Ask
 
-Ask questions via Telegram with inline keyboard buttons. The script blocks until a button is pressed and prints the chosen option to stdout.
+Ask questions via Telegram with inline keyboard buttons. The script blocks until the user answers — either by pressing a button **or** by replying directly to the question message — and prints the answer to stdout.
 
 ## Setup
 
@@ -46,11 +46,13 @@ ANSWER=$(echo "Approve release?" | <skill-dir>/../telegram-skills-bin/bin/telegr
 ANSWER=$(echo "Approve release?" | <skill-dir>/../telegram-skills-bin/bin/telegram --to alice --choice "Approve" --choice "Reject")
 ```
 
-Usage: `<bin> [-c chat_id ...] [--to name ...] --choice "Option" [--choice "Option" ...]` — reads question from stdin. The script blocks until a button is pressed, then prints the chosen text to stdout. The original message is edited to show the selection.
+Usage: `<bin> [-c chat_id ...] [--to name ...] --choice "Option" [--choice "Option" ...]` — reads question from stdin. The script blocks until the user answers, then prints the answer to stdout. The user can either press a button (the chosen option's text is printed) or send a Telegram reply to the question message (the reply text is printed). Either way the original message is edited to show the answer and the buttons are removed.
 
 ## Notes
 
 - Always provide at least two `--choice` options
 - The script blocks — use it when you need the answer before continuing
-- The message is updated after selection to show what was chosen
+- The user can answer by pressing a button **or** by replying to the question message; a text reply is printed to stdout verbatim, so the answer is not limited to the predefined options
+- The message is updated after the answer to show what was chosen (button) or "answered by reply" with the reply text; the buttons are removed
+- Text replies must be sent as a Telegram **reply** to the question message; non-text replies (stickers, photos with no caption) are ignored and the script keeps waiting
 - Supports Markdown formatting in the question text

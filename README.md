@@ -44,7 +44,7 @@ required.
 |-------|-------------|
 | `telegram-setup` | First-time setup: connect a bot and capture your chat ID |
 | `telegram-notify` | Send messages (fire-and-forget) |
-| `telegram-ask` | Ask questions with inline buttons (blocks until answered) |
+| `telegram-ask` | Ask questions with inline buttons, answered by a button press or a text reply (blocks until answered) |
 | `telegram-manage-contacts` | Add, remove, and list named contacts |
 | `telegram-skills-bin` | Shared CLI binary the others depend on (not invoked directly) |
 
